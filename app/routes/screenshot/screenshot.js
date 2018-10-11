@@ -10,7 +10,11 @@ function Screenshot() {
         if(url) {
             (async () => {
                 try {
-                    const browser = await puppeteer.launch();
+                    const browser = await puppeteer.launch({
+                        args: ['--disable-dev-shm-usage'],
+                        executablePath: '/usr/bin/chromium-browser'
+                    });
+
                     const page = await browser.newPage();
 
                     url = decodeURIComponent(url);
