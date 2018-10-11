@@ -18,7 +18,7 @@ function Screenshot() {
                     const imageName = domain.base(url) + '-' + crypto.randomBytes(2).toString('hex');
                     await page.setViewport({width: 800, height: 600});
                     const status = await page.goto(url, {waitUntil: 'networkidle2'});
-                    const relativeFolder = '../images';
+                    const relativeFolder = './images';
 
                     if (!status.ok) {
                         res.status(404);
@@ -29,6 +29,7 @@ function Screenshot() {
                     page.close();
 
                     const folder = path.resolve(relativeFolder);
+                    console.log(folder);
                     res.status(200);
                     res.send({ success: true, imageName: `${imageName}.png`, imageLocation: `${folder}/${imageName}.png`});
 

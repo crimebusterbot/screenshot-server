@@ -12,7 +12,7 @@ router.all('*', (req, res, next) => {
     next();
 });
 
-router.get('/screenshot', (req, res) => {
+router.get('/', (req, res) => {
     screenshot.make(req.query.u, res);
 });
 
