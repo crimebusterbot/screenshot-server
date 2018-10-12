@@ -11,8 +11,11 @@ function Screenshot() {
             (async () => {
                 try {
                     const browser = await puppeteer.launch({
-                        args: ['--disable-dev-shm-usage'],
-                        executablePath: '/usr/bin/chromium-browser'
+                        args: [
+                            '--disable-dev-shm-usage',
+                            '--no-sandbox',
+                            '--disable-setuid-sandbox'
+                        ]
                     });
 
                     const page = await browser.newPage();
