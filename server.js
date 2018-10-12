@@ -18,6 +18,9 @@ app.use(bodyParser.json());
 // Disable standard Express header for security purposes
 app.disable('x-powered-by');
 
+// TODO move images to S3
+app.use(express.static('images'));
+
 // Make the routes
 app.use('/', routes);
 
