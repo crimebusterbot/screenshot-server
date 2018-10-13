@@ -19,6 +19,7 @@ function Screenshot() {
                     });
 
                     const page = await browser.newPage();
+                    const baseUrl = 'https://screenshot.api.webshop-checker.nl';
 
                     url = decodeURIComponent(url);
 
@@ -35,10 +36,8 @@ function Screenshot() {
                     await page.screenshot({path: `${relativeFolder}/${imageName}.png`, fullPage: true});
                     page.close();
 
-                    const folder = path.resolve(relativeFolder);
-                    console.log(folder);
                     res.status(200);
-                    res.send({ success: true, imageName: `${imageName}.png`, imageLocation: `${folder}/${imageName}.png`});
+                    res.send({ success: true, imageName: `${imageName}.png`, imageLocation: `${baseUrl}/${imageName}.png`});
 
                 } catch(error) {
                     res.status(500);
