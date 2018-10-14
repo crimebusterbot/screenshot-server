@@ -20,6 +20,6 @@
 		"ENV NODE_ENV production",
 		"ENV PORT 80",
 		"EXPOSE 80",
-		"CMD [ \"pm2\", \"start\", \"server.js\", "\--name\", \"screenshot\" ]"
+		"CMD [ \"pm2\", \"start\", \"server.js\", \"--name\", \"screenshot\" ]"
 	]
 }
