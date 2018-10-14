@@ -48,7 +48,6 @@ function Screenshot() {
             res.status(500);
             res.send({ success: false, message: 'There is no URL defined'});
         }
-
     }
 }
 
