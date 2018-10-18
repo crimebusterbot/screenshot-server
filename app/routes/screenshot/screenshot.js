@@ -4,6 +4,7 @@ const path = require('path');
 const crypto = require('crypto');
 
 const domain = require('../../lib/domain');
+const backblaze = require('../../lib/backblaze');
 
 function Screenshot() {
     this.make = (url, res) => {
@@ -36,9 +37,17 @@ function Screenshot() {
                     await page.screenshot({path: `${relativeFolder}/${imageName}.png`, fullPage: true});
                     page.close();
 
-                    res.status(200);
-                    res.send({ success: true, imageName: `${imageName}.png`, imageLocation: `${baseUrl}/${imageName}.png`});
+                    let uploadInfo = await backblaze.upload(`${relativeFolder}/${imageName}.png`);
 
+                    fs.unlink(`${relativeFolder}/${imageName}.png`, (err) => {
+                        if(err) {
+                            res.status(500);
+                            res.send({ success: false, message: 'Something went wrong trying delete the file on server', error: error});
+                        }
+
+                        res.status(200);
+                        res.send({ success: true, imageName: `${imageName}.png`, imageLocation: uploadInfo});
+                    });
                 } catch(error) {
                     res.status(500);
                     res.send({ success: false, message: 'Something went wrong trying to get a screenshot', error: error});
