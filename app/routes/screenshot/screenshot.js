@@ -15,18 +15,60 @@ function Screenshot() {
                         args: [
                             '--disable-dev-shm-usage',
                             '--no-sandbox',
-                            '--disable-setuid-sandbox'
+                            '--disable-setuid-sandbox',
+                            '--disable-accelerated-2d-canvas',
+                            '--disable-gpu',
                         ]
                     });
 
+                    const skippedResources = [
+                        'quantserve',
+                        'adzerk',
+                        'doubleclick',
+                        'adition',
+                        'exelator',
+                        'sharethrough',
+                        'cdn.api.twitter',
+                        'google-analytics',
+                        'googletagmanager',
+                        'google',
+                        'facebook',
+                        'analytics',
+                        'optimizely',
+                        'clicktale',
+                        'mixpanel',
+                        'zedo',
+                        'clicksor',
+                        'tiqcdn',
+                    ];
+
                     const page = await browser.newPage();
+                    await page.setRequestInterception(true);
+                    await page.setViewport({width: 800, height: 600});
+                    await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36');
+
+                    page.on('request', request => {
+                        const requestUrl = request._url.split('?')[0].split('#')[0];
+                        if (
+                            skippedResources.some(resource => requestUrl.indexOf(resource) !== -1)
+                        ) {
+                            request.abort();
+                        } else {
+                            request.continue();
+                        }
+                    });
+
                     const baseUrl = 'https://screenshot.api.webshop-checker.nl';
 
                     url = decodeURIComponent(url);
 
                     const imageName = domain.base(url) + '-' + crypto.randomBytes(2).toString('hex');
-                    await page.setViewport({width: 800, height: 600});
-                    const status = await page.goto(url, {waitUntil: 'networkidle2'});
+
+                    const status = await page.goto(url, {
+                        timeout: 25000,
+                        waitUntil: 'networkidle2'
+                    });
+
                     const relativeFolder = './images';
 
                     if (!status.ok) {
@@ -36,6 +78,7 @@ function Screenshot() {
 
                     await page.screenshot({path: `${relativeFolder}/${imageName}.png`, fullPage: true});
                     page.close();
+                    browser.close();
 
                     let uploadInfo = await backblaze.upload(`${relativeFolder}/${imageName}.png`);
 
