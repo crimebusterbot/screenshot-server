@@ -77,8 +77,8 @@ function Screenshot() {
                     }
 
                     await page.screenshot({path: `${relativeFolder}/${imageName}.png`, fullPage: true});
-                    page.close();
-                    browser.close();
+                    await page.close();
+                    await browser.close();
 
                     let uploadInfo = await backblaze.upload(`${relativeFolder}/${imageName}.png`);
 
