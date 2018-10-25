@@ -89,7 +89,7 @@ function Screenshot() {
                         }
 
                         res.status(200);
-                        res.send({ success: true, imageName: `${imageName}.png`, imageLocation: uploadInfo});
+                        res.send({ success: true, imageName: `${imageName}.png`, imageLocation: uploadInfo, headerInformation: status._headers, statusCode: status._status});
                     });
                 } catch(error) {
                     res.status(500);
