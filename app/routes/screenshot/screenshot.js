@@ -64,33 +64,45 @@ function Screenshot() {
 
                     const imageName = domain.base(url) + '-' + crypto.randomBytes(2).toString('hex');
 
-                    const status = await page.goto(url, {
-                        timeout: 25000,
-                        waitUntil: 'networkidle2'
-                    });
+                    try {
+                        const status = await page.goto(url, {
+                            timeout: 25000,
+                            waitUntil: 'networkidle2'
+                        });
 
-                    const relativeFolder = './images';
+                        page.on('unhandledRejection', async(msg) => { await browser.close(); });
 
-                    if (!status.ok) {
-                        res.status(404);
-                        res.send({ success: false, message: 'This website may be offline or taking to long to respond'});
-                    }
+                        const relativeFolder = './images';
 
-                    await page.screenshot({path: `${relativeFolder}/${imageName}.png`, fullPage: true});
-                    await page.close();
-                    await browser.close();
+                        if (!status.ok) {
+                            await page.close();
+                            await browser.close();
 
-                    let uploadInfo = await backblaze.upload(`${relativeFolder}/${imageName}.png`);
-
-                    fs.unlink(`${relativeFolder}/${imageName}.png`, (err) => {
-                        if(err) {
-                            res.status(500);
-                            res.send({ success: false, message: 'Something went wrong trying delete the file on server', error: error});
+                            res.status(404);
+                            res.send({ success: false, message: 'This website may be offline or taking to long to respond'});
                         }
 
-                        res.status(200);
-                        res.send({ success: true, imageName: `${imageName}.png`, imageLocation: uploadInfo, headerInformation: status._headers, statusCode: status._status});
-                    });
+                        await page.screenshot({path: `${relativeFolder}/${imageName}.png`, fullPage: true});
+                        await page.close();
+                        await browser.close();
+
+                        let uploadInfo = await backblaze.upload(`${relativeFolder}/${imageName}.png`);
+
+                        fs.unlink(`${relativeFolder}/${imageName}.png`, (err) => {
+                            if(err) {
+                                res.status(500);
+                                res.send({ success: false, message: 'Something went wrong trying delete the file on server', error: err});
+                            }
+
+                            res.status(200);
+                            res.send({ success: true, imageName: `${imageName}.png`, imageLocation: uploadInfo, headerInformation: status._headers, statusCode: status._status});
+                        });
+                    } catch (error) {
+                        await browser.close();
+
+                        res.status(500);
+                        res.send({ success: false, message: 'Something went wrong trying to get a screenshot', error: error});
+                    }
                 } catch(error) {
                     res.status(500);
                     res.send({ success: false, message: 'Something went wrong trying to get a screenshot', error: error});
