@@ -30,6 +30,12 @@ function Screenshot() {
                         await skipResources(request);
                     });
 
+                    page.on('unhandledRejection', async(msg) => {
+                        console.log('Unhandled Rejection!');
+                        console.log(msg);
+                        await browser.close();
+                    });
+
                     url = decodeURIComponent(url);
 
                     const imageName = domain.base(url) + '-' + crypto.randomBytes(2).toString('hex');
@@ -40,15 +46,11 @@ function Screenshot() {
                             waitUntil: 'networkidle2'
                         });
 
-                        page.on('unhandledRejection', async(msg) => {
-                            console.log('Unhandled Rejection!');
-                            console.log(msg);
-                            await browser.close();
-                        });
-
                         if (!status.ok) {
                             await page.close();
                             await browser.close();
+
+                            console.log(status);
 
                             res.status(404);
                             res.send({ success: false, message: 'This website may be offline or taking to long to respond'});
