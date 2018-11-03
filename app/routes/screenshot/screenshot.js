@@ -21,44 +21,14 @@ function Screenshot() {
                         ]
                     });
 
-                    const skippedResources = [
-                        'quantserve',
-                        'adzerk',
-                        'doubleclick',
-                        'adition',
-                        'exelator',
-                        'sharethrough',
-                        'cdn.api.twitter',
-                        'google-analytics',
-                        'googletagmanager',
-                        'google',
-                        'facebook',
-                        'analytics',
-                        'optimizely',
-                        'clicktale',
-                        'mixpanel',
-                        'zedo',
-                        'clicksor',
-                        'tiqcdn',
-                    ];
-
                     const page = await browser.newPage();
                     await page.setRequestInterception(true);
                     await page.setViewport({width: 800, height: 600});
                     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36');
 
-                    page.on('request', request => {
-                        const requestUrl = request._url.split('?')[0].split('#')[0];
-                        if (
-                            skippedResources.some(resource => requestUrl.indexOf(resource) !== -1)
-                        ) {
-                            request.abort();
-                        } else {
-                            request.continue();
-                        }
+                    page.on('request', async(request) => {
+                        await skipResources(request);
                     });
-
-                    const baseUrl = 'https://screenshot.api.webshop-checker.nl';
 
                     url = decodeURIComponent(url);
 
@@ -66,13 +36,15 @@ function Screenshot() {
 
                     try {
                         const status = await page.goto(url, {
-                            timeout: 25000,
+                            timeout: 15000,
                             waitUntil: 'networkidle2'
                         });
 
-                        page.on('unhandledRejection', async(msg) => { await browser.close(); });
-
-                        const relativeFolder = './images';
+                        page.on('unhandledRejection', async(msg) => {
+                            console.log('Unhandled Rejection!');
+                            console.log(msg);
+                            await browser.close();
+                        });
 
                         if (!status.ok) {
                             await page.close();
@@ -82,6 +54,7 @@ function Screenshot() {
                             res.send({ success: false, message: 'This website may be offline or taking to long to respond'});
                         }
 
+                        const relativeFolder = './images';
                         await page.screenshot({path: `${relativeFolder}/${imageName}.png`, fullPage: true});
                         await page.close();
                         await browser.close();
@@ -100,6 +73,8 @@ function Screenshot() {
                     } catch (error) {
                         await browser.close();
 
+                        console.log(error);
+
                         res.status(500);
                         res.send({ success: false, message: 'Something went wrong trying to get a screenshot', error: error});
                     }
@@ -112,6 +87,39 @@ function Screenshot() {
             res.status(500);
             res.send({ success: false, message: 'There is no URL defined'});
         }
+    }
+}
+
+async function skipResources(request) {
+    const skippedResources = [
+        'quantserve',
+        'adzerk',
+        'doubleclick',
+        'adition',
+        'exelator',
+        'sharethrough',
+        'cdn.api.twitter',
+        'google-analytics',
+        'googletagmanager',
+        'google',
+        'facebook',
+        'analytics',
+        'optimizely',
+        'clicktale',
+        'mixpanel',
+        'zedo',
+        'clicksor',
+        'tiqcdn',
+    ];
+
+    const requestUrl = request._url.split('?')[0].split('#')[0];
+
+    if (
+        skippedResources.some(resource => requestUrl.indexOf(resource) !== -1)
+    ) {
+        request.abort();
+    } else {
+        request.continue();
     }
 }
 
