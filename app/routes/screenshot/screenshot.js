@@ -30,10 +30,9 @@ function Screenshot() {
                         await skipResources(request);
                     });
 
-                    page.on('unhandledRejection', async(msg) => {
+                    page.on('unhandledRejection', (msg) => {
                         console.log('Unhandled Rejection!');
                         console.log(msg);
-                        await browser.close();
                     });
 
                     url = decodeURIComponent(url);
@@ -47,9 +46,6 @@ function Screenshot() {
                         });
 
                         if (!status.ok) {
-                            await page.close();
-                            await browser.close();
-
                             console.log(status);
 
                             res.status(404);
@@ -75,6 +71,7 @@ function Screenshot() {
                     } catch (error) {
                         await browser.close();
 
+                        console.log('Error');
                         console.log(error);
 
                         res.status(500);
