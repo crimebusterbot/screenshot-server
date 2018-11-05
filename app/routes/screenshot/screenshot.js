@@ -45,12 +45,7 @@ function Screenshot() {
                             waitUntil: 'networkidle2'
                         });
 
-                        if (!status.ok) {
-                            console.log(status);
-
-                            res.status(404);
-                            res.send({ success: false, message: 'This website may be offline or taking to long to respond'});
-                        }
+                        await page.waitForNavigation();
 
                         const relativeFolder = './images';
                         await page.screenshot({path: `${relativeFolder}/${imageName}.png`, fullPage: true});
