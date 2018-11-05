@@ -21,9 +21,9 @@ function Screenshot() {
                     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36');
 
                     // Make it a bit quicker by skipping some scripts like Google
-                    page.on('request', async(request) => {
+/*                    page.on('request', async(request) => {
                         await skipResources(request);
-                    });
+                    });*/
 
                     page.on('unhandledRejection', (msg) => {
                         console.log('Unhandled Rejection!');
@@ -59,7 +59,7 @@ function Screenshot() {
                     } catch (error) {
                         await browser.close();
 
-                        console.log('Error');
+                        console.log('Error' + new Date());
                         console.log(error);
 
                         res.status(500);
