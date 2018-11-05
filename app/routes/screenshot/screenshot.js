@@ -11,21 +11,15 @@ function Screenshot() {
         if(url) {
             (async () => {
                 try {
-                    const browser = await puppeteer.launch({
-                        args: [
-                            '--disable-dev-shm-usage',
-                            '--no-sandbox',
-                            '--disable-setuid-sandbox',
-                            '--disable-accelerated-2d-canvas',
-                            '--disable-gpu',
-                        ]
-                    });
+                    // Make sure the docker with chrome is running https://docs.browserless.io/docs/docker-quickstart.html
+                    const browser = await puppeteer.connect({browserWSEndpoint: 'ws://localhost:20000'});
 
                     const page = await browser.newPage();
                     await page.setRequestInterception(true);
                     await page.setViewport({width: 800, height: 600});
                     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36');
 
+                    // Make it a bit quicker by skipping some scripts like Google
                     page.on('request', async(request) => {
                         await skipResources(request);
                     });
@@ -44,8 +38,6 @@ function Screenshot() {
                             timeout: 15000,
                             waitUntil: 'networkidle2'
                         });
-
-                        await page.waitForNavigation();
 
                         const relativeFolder = './images';
                         await page.screenshot({path: `${relativeFolder}/${imageName}.png`, fullPage: true});
