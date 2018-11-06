@@ -14,16 +14,11 @@ function Screenshot() {
                     // Make sure the docker with chrome is running https://docs.browserless.io/docs/docker-quickstart.html
                     // TODO put the url in a ENV
                     const browser = await puppeteer.connect({browserWSEndpoint: 'ws://35.176.172.223'});
-
+                    // const browser = await puppeteer.launch({headless: false});
                     const page = await browser.newPage();
-                    await page.setRequestInterception(true);
+
                     await page.setViewport({width: 800, height: 600});
                     await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/69.0.3497.100 Safari/537.36');
-
-                    // Make it a bit quicker by skipping some scripts like Google
-/*                    page.on('request', async(request) => {
-                        await skipResources(request);
-                    });*/
 
                     page.on('unhandledRejection', (msg) => {
                         console.log('Unhandled Rejection!');
@@ -59,7 +54,7 @@ function Screenshot() {
                     } catch (error) {
                         await browser.close();
 
-                        console.log('Error' + new Date());
+                        console.log('Error ' + new Date());
                         console.log(error);
 
                         res.status(500);
@@ -74,39 +69,6 @@ function Screenshot() {
             res.status(500);
             res.send({ success: false, message: 'There is no URL defined'});
         }
-    }
-}
-
-async function skipResources(request) {
-    const skippedResources = [
-        'quantserve',
-        'adzerk',
-        'doubleclick',
-        'adition',
-        'exelator',
-        'sharethrough',
-        'cdn.api.twitter',
-        'google-analytics',
-        'googletagmanager',
-        'google',
-        'facebook',
-        'analytics',
-        'optimizely',
-        'clicktale',
-        'mixpanel',
-        'zedo',
-        'clicksor',
-        'tiqcdn',
-    ];
-
-    const requestUrl = request._url.split('?')[0].split('#')[0];
-
-    if (
-        skippedResources.some(resource => requestUrl.indexOf(resource) !== -1)
-    ) {
-        request.abort();
-    } else {
-        request.continue();
     }
 }
 
