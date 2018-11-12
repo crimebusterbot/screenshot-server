@@ -1,7 +1,8 @@
-const puppeteer = require('puppeteer');
+const puppeteer = require('puppeteer-extra');
 const fs = require('fs');
 const path = require('path');
 const crypto = require('crypto');
+puppeteer.use(require('puppeteer-extra-plugin-stealth')());
 
 const domain = require('../../lib/domain');
 const backblaze = require('../../lib/backblaze');
@@ -13,8 +14,7 @@ function Screenshot() {
                 try {
                     // Make sure the docker with chrome is running https://docs.browserless.io/docs/docker-quickstart.html
                     // TODO put the url in a ENV
-                    const browser = await puppeteer.connect({browserWSEndpoint: 'ws://35.176.172.223'});
-                    // const browser = await puppeteer.launch({headless: false});
+                    const browser = await puppeteer.connect({browserWSEndpoint: 'ws://159.69.147.240?token=crimebusterbot', ignoreHTTPSErrors: true});
                     const page = await browser.newPage();
 
                     await page.setViewport({width: 800, height: 600});
