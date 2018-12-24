@@ -19,6 +19,7 @@
     "backblaze-b2": "^1.0.4",
     "body-parser": "^1.18.3",
     "cors": "^2.8.4",
+    "dotenv": "^6.2.0",
     "express": "^4.16.3",
     "puppeteer": "1.9.0",
     "puppeteer-extra": "^2.1.1",

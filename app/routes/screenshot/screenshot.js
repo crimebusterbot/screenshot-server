@@ -14,7 +14,7 @@ function Screenshot() {
                 try {
                     // Make sure the docker with chrome is running https://docs.browserless.io/docs/docker-quickstart.html
                     // TODO put the url in a ENV
-                    const browser = await puppeteer.connect({browserWSEndpoint: 'ws://159.69.147.240?token=crimebusterbot', ignoreHTTPSErrors: true});
+                    const browser = await puppeteer.connect({browserWSEndpoint: process.env.SH_SERVER_ENDPOINT, ignoreHTTPSErrors: true});
                     const page = await browser.newPage();
 
                     await page.setViewport({width: 800, height: 600});

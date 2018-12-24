@@ -6,14 +6,14 @@ function Backblaze() {
     this.upload = async (imageLocation) => {
         return new Promise(async (resolve, reject) => {
             const backblaze = new B2({
-                accountId: '002a8a41c8f6cfc0000000001',
-                applicationKey: 'K002sUiQ6Pmk5ySOwBCto2iHR8Ux/84'
+                accountId: process.env.BB_ACCOUNT_ID,
+                applicationKey: process.env.BB_APPLICATION_KEY
             });
 
             try {
                 let authorization = await backblaze.authorize();
 
-                let uploadUrl = await backblaze.getUploadUrl('6a08cad4116c883f666c0f1c');
+                let uploadUrl = await backblaze.getUploadUrl(process.env.BB_UPLOAD_URL);
 
                 fs.readFile(imageLocation, async (error, data) => {
                     try {
