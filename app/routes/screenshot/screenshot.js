@@ -32,7 +32,8 @@ function Screenshot() {
                     try {
                         const status = await page.goto(url, {
                             timeout: 15000,
-                            waitUntil: 'networkidle2'
+                            waitUntil: 'networkidle2',
+                            referer: 'https://www.google.com/'
                         });
 
                         const relativeFolder = './images';
