@@ -12,6 +12,23 @@ BB_UPLOAD_URL=UPLOAD-URL
 SH_SERVER_ENDPOINT=URL
 ```
 
+## Setting up browserless image
+
+Puppeteer can use an external instance of Chrome to start making screenshots. In this project we use a Browserless.io Docker image to enable this. Start the following image https://hub.docker.com/r/browserless/chrome with the following params:
+
+docker run \
+  -d \
+  -p 80:3000 \
+  --shm-size 4gb \
+  --name browserless \
+  --restart always \
+  -e "DEBUG=browserless/chrome" \
+  -e "PREBOOT_CHROME=true" \
+  -e "TOKEN=yourtoken" \
+  -e "MAX_CONCURRENT_SESSIONS=5" \
+  -e "MAX_QUEUE_LENGTH=10"
+  browserless/chrome:latest
+
 ## Starting service
 
 To start the serve use `node server.js`
